@@ -1,0 +1,15 @@
+<h1>LANDING PAGE</h1>
+<section class="d-flex flex-wrap justify-content-evenly">
+  {{#each productos}}
+    <div class="card m-1    " style="width: 18rem;">
+      <img src={{this.imagen}} class="card-img-top" alt= {{this._id}}"..." style="height: 12 rem;">
+      <div class="card-body">
+        <h5 class="card-title">Producto: {{this.nombre}}</h5>
+        <p class="card-text">Tipo: {{this.categoria}}</p>
+        <p class="card-text">Color: {{this.color}}</p>
+        <p class="card-text">$ {{this.precio}}</p>
+        <a href="/details/{{this._id}}" class="btn btn-primary">Mas informacion del producto</a>
+      </div>
+    </div>
+  {{/each}}
+</section>
