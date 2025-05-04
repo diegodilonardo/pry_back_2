@@ -3,21 +3,21 @@ import { productosManager } from "../../data/managers/mongo/manager.mongo.js";
 
 const productosRouter = Router();
 
-const crearProducto = async (req, res, next) => {
+const crearRegistro = async (req, res, next) => {
   try {
     const { method, originalUrl: url } = req;
     const data = req.body; 
-    const response = await productosManager.crearProducto(data);
+    const response = await productosManager.crearRegistro(data);
     res.status(201).json({ response, method, url });
   } catch (error) {
     next(error);
   }
 };
-const buscarProductos = async (req, res, next) => {
+const buscarRegistros = async (req, res, next) => {
   try {
     const { method, originalUrl: url } = req;
     const filter = req.query;
-    const response = await productosManager.buscarProductos(filter);
+    const response = await productosManager.buscarRegistros(filter);
     if (response.length === 0) {
       const error = new Error("Datos no encontrados");
       error.statusCode = 404;
@@ -28,11 +28,11 @@ const buscarProductos = async (req, res, next) => {
     next(error);
   }
 };
-const buscarProductoPorId = async (req, res, next) => {
+const buscarRegistroPorId = async (req, res, next) => {
   try {
     const { method, originalUrl: url } = req;
     const { id } = req.params;
-    const response = await productosManager.buscarProductoPorId(id);
+    const response = await productosManager.buscarRegistroPorId(id);
     if (!response) {
       const error = new Error("Datos no encontrados");
       error.statusCode = 404;
@@ -43,23 +43,23 @@ const buscarProductoPorId = async (req, res, next) => {
     next(error);
   }
 };
-const actualizarProductoPorId = async (req, res, next) => {
+const actualizarRegsitroPorId = async (req, res, next) => {
   try {
     const { method, originalUrl: url } = req;
     const { id } = req.params;
     const data = req.body;
-    const response = await productosManager.actualizarProductoPorId(id, data);
+    const response = await productosManager.actualizarRegsitroPorId(id, data);
     
     res.status(200).json({ response, method, url });
   } catch (error) {
     next(error);
   }
 };
-const eliminarProductoPorId = async (req, res, next) => {
+const eliminarRegistroPorId = async (req, res, next) => {
   try {
     const { method, originalUrl: url } = req;
     const { id } = req.params;
-    const response = await productosManager.eliminarProductoPorId(id);
+    const response = await productosManager.eliminarRegistroPorId(id);
     if (!response) {
       const error = new Error("Datos no encontrados");
       error.statusCode = 404;
@@ -71,12 +71,12 @@ const eliminarProductoPorId = async (req, res, next) => {
   }
 };
 
-productosRouter.post("/", crearProducto);
-productosRouter.get("/", buscarProductos);
+productosRouter.post("/", crearRegistro);
+productosRouter.get("/", buscarRegistros);
 
-productosRouter.get("/:id", buscarProductoPorId);
+productosRouter.get("/:id", buscarRegistroPorId);
 
-productosRouter.put("/:id", actualizarProductoPorId);
-productosRouter.delete("/:id", eliminarProductoPorId);
+productosRouter.put("/:id", actualizarRegsitroPorId);
+productosRouter.delete("/:id", eliminarRegistroPorId);
 
 export default productosRouter;

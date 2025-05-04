@@ -6,15 +6,13 @@ class Manager {
   constructor(model) { 
     this.model = model;
   }
-  crearProducto = async (data) => await this.model.create(data);
-  buscarProductos = async (filter) => await this.model.find(filter).lean();
-
-  buscarProductoPorId = async (id) => await this.model.findOne({ _id: id }).lean();
-
+  crearRegistro = async (data) => await this.model.create(data);
+  buscarRegistros = async (filter) => await this.model.find(filter).lean();
+  buscarRegistroPorId = async (id) => await this.model.findOne({ _id: id }).lean();
   buscarPor = async (filter) => await this.model.findOne(filter).lean();
+  actualizarRegsitroPorId = async (id, data) => await this.model.findByIdAndUpdate(id, data, { new: true });
+  eliminarRegistroPorId = async (id) => await this.model.findByIdAndDelete(id);
 
-  actualizarProductoPorId = async (id, data) => await this.model.findByIdAndUpdate(id, data, { new: true });
-  eliminarProductoPorId = async (id) => await this.model.findByIdAndDelete(id);
 }
 
 const productosManager = new Manager(Producto);

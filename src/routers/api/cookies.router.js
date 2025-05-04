@@ -24,8 +24,8 @@ const createCB = (req, res, next) => {
     const message = "Cookie Vence en 7 dias";
     return res
       .status(201)
-      .cookie("mode", "dark", { maxAge })
-      .cookie("role", "admin", { maxAge })
+      .cookie("Modo", "dark", { maxAge })
+      .cookie("Rol", "admin", { maxAge })
       .json({ message });
   } catch (error) {
     next(error);
@@ -56,7 +56,9 @@ const clearCB = (req, res, next) => {
     return res
       .status(200)
       .clearCookie("user")
-      .clearCookie("role")
+      .clearCookie("Rol")
+      .clearCookie("id")
+      .clearCookie("Modo")
       .json({ message });
   } catch (error) {
     next(error);

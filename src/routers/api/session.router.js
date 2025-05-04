@@ -5,8 +5,9 @@ const sessionsRouter = Router();
 
 const createCb = (req, res, next) => {
   try {
-    req.session.role = "ADMIN";
-    req.session.mode = "dark";
+    req.session.role = "Admin";
+    req.session.mode= "Dark";
+    req.session.user = "Diego";
     const message = "La Sesion Vence en 7 Dias";
     return res.status(201).json({ message });
   } catch (error) {
@@ -26,7 +27,7 @@ const readCb = (req, res, next) => {
 const clearCb = (req, res, next) => {
   try {
     req.session.destroy();
-    const message = "Sessions eliminada ";
+    const message = "Sesion eliminada ";
     return res.status(200).json({ message });
   } catch (error) {
     next(error);
