@@ -18,7 +18,7 @@ const schema = new Schema(
     talle: { type: String },
     modelo: { type: String },
     sku: {type: String},
-    owner_id: { type: Types.ObjectId, ref: "users", index: true },
+    owner_id: { type: Types.ObjectId, ref: "Usuarios", index: true },
     
   },
   { timestamps: true }

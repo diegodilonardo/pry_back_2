@@ -1,30 +1,16 @@
 import { Router } from "express";
-import { usuariosManager } from "../../data/managers/mongo/manager.mongo.js";
-import { compararHash, crearHash } from "../../helpers/hash.helper.js";
 import esUsuario from "../../middlewares/esUsuario.mid.js";
+import passport from "../../middlewares/passport.mid.js";
 
 const authRouter = Router();
 
 const registroCB = async (req, res, next) => {
   try {
     const { method, originalUrl: url } = req;
-    if (!req.body.email || !req.body.password || !req.body.ciudad) {
-      const error = new Error("Datos Invalidos");
-      error.statusCode = 400;
-      throw error;
-    }
-    const { email } = req.body;
-    let user = await usuariosManager.buscarPor({ email });
-    if (user) {
-      const error = new Error("Datos Incorrectos");
-      error.statusCode = 401;
-      throw error;
-    }
-    req.body.password = crearHash(req.body.password);
-    user = await usuariosManager.crearRegistro(req.body);
+    const { _id } = req.user;
     return res
       .status(201)
-      .json({ message: "Usuario Registrado", response: user._id, method, url });
+      .json({ message: "Usuario Registrado", response: _id, method, url });
   } catch (error) {
     next(error);
   }
@@ -33,30 +19,11 @@ const registroCB = async (req, res, next) => {
 const loginCB = async (req, res, next) => {
   try {
     const { method, originalUrl: url } = req;
-    const { email, password } = req.body; // Datos desde el Body
-    if (!email || !password) {
-      const error = new Error("Datos Invalidos");
-      error.statusCode = 400;
-      throw error;
-    }
-    let user = await usuariosManager.buscarPor({ email }); //Datos desde Mongo
-    if (!user) {
-      const error = new Error("Contraseña Incorrecta");
-      error.statusCode = 401;
-      throw error;
-    }
-    const verificarPassword = compararHash(password, user.password);
-    if (!verificarPassword) {
-      const error = new Error("Contraseña Incorrecta");
-      error.statusCode = 401;
-      throw error;
-    }
-    req.session.user_id = user._id;
-    req.session.role = user.rol;
-    req.session.email = user.email;
+    const { _id } = req.user;
     return res
       .status(200)
-      .json({ message: "Usuario Logueado", response: user._id, method, url });
+      .cookie("token", req.user.token, { maxAge: 7 * 24 * 60 * 60 * 1000 })
+      .json({ message: "Usuario Logueado", response: _id, method, url });
   } catch (error) {
     next(error);
   }
@@ -65,8 +32,7 @@ const loginCB = async (req, res, next) => {
 const signoutCB = async (req, res, next) => {
   try {
     const { method, originalUrl: url } = req;
-    req.session.destroy();
-    return res.status(200).json({
+    return res.status(200).clearCookie("token").json({
       message: "Usuario Deslogueado",
       method,
       url,
@@ -87,9 +53,46 @@ const onlineCB = async (req, res, next) => {
   }
 };
 
-authRouter.post("/registro", registroCB);
-authRouter.post("/login", loginCB);
-authRouter.post("/signout", esUsuario, signoutCB);
-authRouter.post("/online", esUsuario, onlineCB);
+const badAuth = async (req, res, next) => {
+  try {
+    const error = new Error("Autorizacion Incorrecta");
+    error.statusCode = 401;
+    throw error;
+  } catch (error) {
+    next(error);
+  }
+};
+
+const denegada = async (req, res, next) => {
+  try {
+    const error = new Error("Autorizacion Denegada");
+    error.statusCode = 403;
+    throw error;
+  } catch (error) {
+    next(error);
+  }
+};
+
+const optsBad = {
+  session: false,
+  failureRedirect: "/api/autentificar/autenticacion-incorrecta",
+};
+
+const optsDenegada = {
+  session: false,
+  failureRedirect: "/api/autentificar/autenticacion-denegada",
+};
+
+authRouter.post("/registro",passport.authenticate("registro", optsBad),registroCB);
+
+authRouter.post("/login", passport.authenticate("login", optsBad), loginCB);
+
+authRouter.post("/signout",passport.authenticate("user", optsDenegada),signoutCB);
+
+
+
+authRouter.post("/online",passport.authenticate("user", optsDenegada),onlineCB);
+authRouter.get("/autenticacion-incorrecta", badAuth, onlineCB);
+authRouter.get("/autenticacion-denegada", denegada, onlineCB);
 
 export default authRouter;
