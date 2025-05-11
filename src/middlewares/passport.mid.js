@@ -52,7 +52,7 @@ passport.use(
       try {
         let user = await usuariosManager.buscarPor({ email }); //Datos desde Mongo
         if (!user) {
-          const error = new Error("Datos Incorrectos");
+          const error = new Error("Datos Incorrectos. Debe Registrarse como usuario");
           error.statusCode = 401;
           throw error;
         }

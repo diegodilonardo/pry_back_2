@@ -89,8 +89,6 @@ authRouter.post("/login", passport.authenticate("login", optsBad), loginCB);
 
 authRouter.post("/signout",passport.authenticate("user", optsDenegada),signoutCB);
 
-
-
 authRouter.post("/online",passport.authenticate("user", optsDenegada),onlineCB);
 authRouter.get("/autenticacion-incorrecta", badAuth, onlineCB);
 authRouter.get("/autenticacion-denegada", denegada, onlineCB);
