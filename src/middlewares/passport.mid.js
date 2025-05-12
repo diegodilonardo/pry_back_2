@@ -4,6 +4,9 @@ import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
 import { usuariosManager } from "../data/managers/mongo/manager.mongo.js";
 import { compararHash, crearHash } from "../helpers/hash.helper.js";
 import { crearToken } from "../helpers/token.helper.js";
+import { Strategy as GoogleStrategy } from "passport-google-oauth2";
+
+const callbackURL = "http://localhost:8080/api/autentificar/google/redirect";
 
 passport.use(
   /* nombre de la estrategia de autenticacion/autorizacion */
@@ -22,9 +25,13 @@ passport.use(
         }
         let user = await usuariosManager.buscarPor({ email });
         if (user) {
-          const error = new Error("Datos Incorrectos");
+          /*  const error = new Error("Datos Incorrectos");
           error.statusCode = 401;
-          throw error;
+          throw error;*/
+          done(null, null, {
+            message: "Credenciales Invalidas",
+            statusCode: 401,
+          });
         }
         req.body.password = crearHash(password);
         user = await usuariosManager.crearRegistro(req.body);
@@ -52,15 +59,25 @@ passport.use(
       try {
         let user = await usuariosManager.buscarPor({ email }); //Datos desde Mongo
         if (!user) {
-          const error = new Error("Datos Incorrectos. Debe Registrarse como usuario");
+          /*  const error = new Error(
+            "Datos Incorrectos. Debe Registrarse como usuario"
+          );
           error.statusCode = 401;
-          throw error;
+          throw error;*/
+          done(null, null, {
+            message: "Credenciales Invalidas",
+            statusCode: 401,
+          });
         }
         const verificarPassword = compararHash(password, user.password);
         if (!verificarPassword) {
-          const error = new Error("Contraseña Incorrecta");
+          /*  const error = new Error("Contraseña Incorrecta");
           error.statusCode = 401;
-          throw error;
+          throw error;*/
+          done(null, null, {
+            message: "Credenciales Invalidas",
+            statusCode: 401,
+          });
         }
         /* No se necesita session por que se trabaja con passport y jwt /*
             /* req.session.user_id = user._id; /*
@@ -101,9 +118,13 @@ passport.use(
         console.log(data);
         console.log(user);
         if (!user) {
-          const error = new Error("Acceso Denegado User");
+          /*  const error = new Error("Acceso Denegado User");
           error.statusCode = 403;
-          throw error;
+          throw error;*/
+          done(null, null, {
+            message: "Usuario Acceso Denegado",
+            statusCode: 403,
+          });
         }
         done(null, user);
       } catch (error) {
@@ -129,9 +150,15 @@ passport.use(
           rol,
         });
         if (!user || user.rol !== "Administrador") {
-          const error = new Error("Acceso denegado, no tiene los permisos correspondientes.");
+          /* const error = new Error(
+            "Acceso denegado, no tiene los permisos correspondientes."
+          );
           error.statusCode = 403;
-          throw error;
+          throw error;*/
+          done(null, null, {
+            message: "Acceso denegado, no tiene los permisos correspondientes.",
+            statusCode: 403,
+          });
         }
         done(null, user);
       } catch (error) {
@@ -141,4 +168,42 @@ passport.use(
   )
 );
 
+passport.use(
+  "google",
+  new GoogleStrategy(
+    {
+      clientID: process.env.ID_CLIENTE_GOOGLE,
+      clientSecret: process.env.SECRET_CLIENTE_GOOGLE,
+      callbackURL,
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        console.log(profile);
+        const { email, name, picture, id } = profile;
+        let user = await usuariosManager.buscarPor({ email: id });
+        if (!user) {
+          user = {
+            email: id,
+            name: name.givenName,
+            avatar: picture,
+            password: crearHash(email),
+            ciudad: "Google",
+          };
+          user = await usuariosManager.crearRegistro(user);
+        }
+        const data = {
+          user_id: user.user_id,
+          email: user.email,
+          rol: user.rol,
+        };
+        const token = crearToken(data);
+        user.token = token;
+
+        done(null, user);
+      } catch (error) {
+        done(error);
+      }
+    }
+  )
+);
 export default passport;

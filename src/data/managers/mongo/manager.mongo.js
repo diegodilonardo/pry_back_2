@@ -10,7 +10,7 @@ class Manager {
   buscarRegistros = async (filter) => await this.model.find(filter).lean();
   buscarRegistroPorId = async (id) => await this.model.findOne({ _id: id }).lean();
   buscarPor = async (filter) => await this.model.findOne(filter).lean();
-  actualizarRegsitroPorId = async (id, data) => await this.model.findByIdAndUpdate(id, data, { new: true });
+  actualizarRegistroPorId = async (id, data) => await this.model.findByIdAndUpdate(id, data, { new: true });
   eliminarRegistroPorId = async (id) => await this.model.findByIdAndDelete(id);
 
 }

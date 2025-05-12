@@ -16,7 +16,7 @@ document.querySelector("#btnregistro").addEventListener("click", async () => {
       const url = "/api/autentificar/registro";
       let response = await fetch(url, opts);
       response = await response.json();
-     // console.log(response);
+     
       if (response.error) {
         alert(response.error);
       } else {

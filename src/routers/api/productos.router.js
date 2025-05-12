@@ -88,16 +88,8 @@ productosRouter.get("/", buscarRegistros);
 
 productosRouter.get("/:id", buscarRegistroPorId);
 
-productosRouter.put(
-  "/:id",
-  passport.authenticate("admin", optsDenegada),
-  actualizarRegistroPorId
-);
+productosRouter.put("/:id",passport.authenticate("admin", optsDenegada),actualizarRegistroPorId);
 
-productosRouter.delete(
-  "/:id",
-  passport.authenticate("admin", optsDenegada),
-  eliminarRegistroPorId
-);
+productosRouter.delete("/:id",passport.authenticate("admin", optsDenegada),eliminarRegistroPorId);
 
 export default productosRouter;

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import esUsuario from "../../middlewares/esUsuario.mid.js";
+import passportCb from "../../middlewares/passportCb.mid.js";
 import passport from "../../middlewares/passport.mid.js";
 
 const authRouter = Router();
@@ -73,23 +73,25 @@ const denegada = async (req, res, next) => {
   }
 };
 
-const optsBad = {
+/*const optsBad = {
   session: false,
   failureRedirect: "/api/autentificar/autenticacion-incorrecta",
 };
 
-const optsDenegada = {
+/*const optsDenegada = {
   session: false,
   failureRedirect: "/api/autentificar/autenticacion-denegada",
-};
+};*/
 
-authRouter.post("/registro",passport.authenticate("registro", optsBad),registroCB);
-
-authRouter.post("/login", passport.authenticate("login", optsBad), loginCB);
-
-authRouter.post("/signout",passport.authenticate("user", optsDenegada),signoutCB);
-
-authRouter.post("/online",passport.authenticate("user", optsDenegada),onlineCB);
+authRouter.post("/registro", passportCb("registro"), registroCB);
+authRouter.post("/login", passportCb("login"), loginCB);
+authRouter.get(
+  "/google",
+  passportCb("google", { scope: ["email", "profile"] })
+);
+authRouter.get("/google/redirect", passportCb("google"), loginCB);
+authRouter.post("/signout", passportCb("user"), signoutCB);
+authRouter.post("/online", passportCb("user"), onlineCB);
 authRouter.get("/autenticacion-incorrecta", badAuth, onlineCB);
 authRouter.get("/autenticacion-denegada", denegada, onlineCB);
 

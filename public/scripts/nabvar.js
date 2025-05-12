@@ -11,19 +11,24 @@ const isOnline = async () => {
     const url = "/api/autentificar/online";
     let response = await fetch(url, opts);
     response = await response.json();
-    if (response.user_id) {
+    console.log(response.error);
+    if (response.error) {
       selector.innerHTML = `
-            <a class="btn btn-success py-1 px-2 m-1" href="/profile/${response.user_id}">Profile</a>
-            <a class="btn btn-success py-1 px-2 m-1" href="/cart/${response.user_id}">Cart</a>
-            <button class="btn btn-success py-1 px-2 m-1" id="signout">Sign out</button>
-          `;
+      <a class="btn btn-success py-1 px-2 m-1" href="/registro/">Registro de Usuario</a>
+      <a class="btn btn-success py-1 px-2 m-1" href="/login">Login de Usuario</a>`;
+    } else {
+      selector.innerHTML = `
+      <a class="btn btn-success py-1 px-2 m-1" href="/perfil">Ver Perfil</a>
+      <a class="btn btn-success py-1 px-2 m-1" href="/carrito">Carrito</a>
+      <button class="btn btn-success py-1 px-2 m-1" id="signout">Sign out</button>
+    `;
       document.querySelector("#signout").addEventListener("click", async () => {
         try {
           const opts = {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
+              
             },
           };
           const url = "/api/autentificar/signout";
