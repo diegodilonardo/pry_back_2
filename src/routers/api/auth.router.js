@@ -45,9 +45,10 @@ const signoutCB = async (req, res, next) => {
 const onlineCB = async (req, res, next) => {
   try {
     const { method, originalUrl: url } = req;
+    const {usuario_online} = req.user
     return res
       .status(200)
-      .json({ message: "Usuario Online", response: true, method, url });
+      .json({ message: "Usuario Online", response: usuario_online, method, url });
   } catch (error) {
     next(error);
   }

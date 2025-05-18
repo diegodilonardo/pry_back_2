@@ -50,7 +50,7 @@ const actualizarRegistroPorId = async (req, res, next) => {
     const { method, originalUrl: url } = req;
     const { id } = req.params;
     const data = req.body;
-    const response = await productosManager.actualizarRegsitroPorId(id, data);
+    const response = await productosManager.actualizarRegistroPorId(id, data);
 
     res.status(200).json({ response, method, url });
   } catch (error) {
