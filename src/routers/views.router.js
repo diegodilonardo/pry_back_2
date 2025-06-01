@@ -1,68 +1,47 @@
-import { Router } from "express";
+import CustomRouter from "../helpers/router.helper.js";
 import { productosManager } from "../data/managers/mongo/manager.mongo.js";
 import passport from "../middlewares/passport.mid.js";
 
-const viewsRouter = Router();
 
 const indexView = async (req, res) => {
-  try {
-    const productos = await productosManager.buscarRegistros();
-    res.status(200).render("index", { productos });
-  } catch (error) {
-    res.status(error.statusCode || 500).render("error", { error });
-  }
+  const productos = await productosManager.buscarRegistros();
+  res.status(200).render("index", { productos });
 };
-
 const registroView = async (req, res) => {
-  try {
-    res.status(200).render("register");
-  } catch (error) {
-    res.status(error.statusCode || 500).render("error", { error });
-  }
+  res.status(200).render("register");
 };
-
 const loginView = async (req, res) => {
-  try {
-    res.status(200).render("login");
-  } catch (error) {
-    res.status(error.statusCode || 500).render("error", { error });
-  }
+  res.status(200).render("login");
 };
-
 const detalleProductoView = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const producto = await productosManager.buscarRegistroPorId(id);
-    res.status(200).render("detalle", { producto });
-  } catch (error) {
-    res.status(error.statusCode || 500).render("error", { error });
-  }
+  const { id } = req.params;
+  const producto = await productosManager.buscarRegistroPorId(id);
+  res.status(200).render("detalle", { producto });
 };
-
 const perfilUsuarioView = async (req, res) => {
-  try {
-    const { user } = req;
-    res.status(200).render("perfil", { user });
-  } catch (error) {
-    res.status(error.statusCode || 500).render("error", { error });
-  }
+  const { user } = req;
+  res.status(200).render("perfil", { user });
 };
-
 const actualizarPerfilView = async (req, res) => {
-  try {
-    const { user } = req;
-    res.status(200).render("actualizarUsuario", { user });
-  } catch (error) {
-    res.status(error.statusCode || 500).render("error", { error });
-  }
+  const { user } = req;
+  res.status(200).render("actualizarUsuario", { user });
 };
 
+class ViewsRouter extends CustomRouter {
+  constructor() {
+    super();
+    this.init();
+  }
+  init = () => {
+    this.render("/" , indexView);
+    this.render("/registro" , registroView);
+    this.render("/login" , loginView);
+    this.render("/detalle/:id" , detalleProductoView);
+    this.render("/perfil",perfilUsuarioView);
+    this.render("/actualizarUsuario", actualizarPerfilView);
+  };
+}
 
-viewsRouter.get("/", indexView);
-viewsRouter.get("/registro", registroView);
-viewsRouter.get("/login", loginView);
-viewsRouter.get("/detalle/:id", detalleProductoView);
-viewsRouter.get("/perfil",passport.authenticate("user", { session: false }),perfilUsuarioView);
-viewsRouter.get("/actualizarUsuario", actualizarPerfilView);
+const viewsRouter = new ViewsRouter().getRouter();
 
 export default viewsRouter;

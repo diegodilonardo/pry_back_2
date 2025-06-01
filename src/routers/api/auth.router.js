@@ -1,99 +1,42 @@
-import { Router } from "express";
+import CustomRouter from "../../helpers/router.helper.js";
 import passportCb from "../../middlewares/passportCb.mid.js";
-import passport from "../../middlewares/passport.mid.js";
 
-const authRouter = Router();
+const registroCB = async (req, res) => {
+  const { _id } = req.user;
+  res.json201(_id, "Usuario Registrado");
+};
+const loginCB = async (req, res) => {
+  const { _id } = req.user;
+  const opts = { maxAge: 7 * 24 * 60 * 60 * 1000 };
+  res.cookie("token", req.user.token, opts).json201(_id, "Usuario Logueado");
+};
+const signoutCB = async (req, res) => {
+  res.clearCookie("token").json200(req.user._id, "Usuario Deslogueado");
+};
+const onlineCB = async (req, res) =>
+  res.json200(req.user._id, "Usuario Online");
+const badAuth = async (req, res) => res.json401();
+const denegada = async (req, res) => res.json403();
 
-const registroCB = async (req, res, next) => {
-  try {
-    const { method, originalUrl: url } = req;
-    const { _id } = req.user;
-    return res
-      .status(201)
-      .json({ message: "Usuario Registrado", response: _id, method, url });
-  } catch (error) {
-    next(error);
+class AuthRouter extends CustomRouter {
+  constructor() {
+    super();
+    this.init();
   }
-};
-
-const loginCB = async (req, res, next) => {
-  try {
-    const { method, originalUrl: url } = req;
-    const { _id } = req.user;
-    return res
-      .status(200)
-      .cookie("token", req.user.token, { maxAge: 7 * 24 * 60 * 60 * 1000 })
-      .json({ message: "Usuario Logueado", response: _id, method, url });
-  } catch (error) {
-    next(error);
-  }
-};
-
-const signoutCB = async (req, res, next) => {
-  try {
-    const { method, originalUrl: url } = req;
-    return res.status(200).clearCookie("token").json({
-      message: "Usuario Deslogueado",
-      method,
-      url,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-const onlineCB = async (req, res, next) => {
-  try {
-    const { method, originalUrl: url } = req;
-    const {usuario_online} = req.user
-    return res
-      .status(200)
-      .json({ message: "Usuario Online", response: usuario_online, method, url });
-  } catch (error) {
-    next(error);
-  }
-};
-
-const badAuth = async (req, res, next) => {
-  try {
-    const error = new Error("Autorizacion Incorrecta");
-    error.statusCode = 401;
-    throw error;
-  } catch (error) {
-    next(error);
-  }
-};
-
-const denegada = async (req, res, next) => {
-  try {
-    const error = new Error("Autorizacion Denegada");
-    error.statusCode = 403;
-    throw error;
-  } catch (error) {
-    next(error);
-  }
-};
-
-/*const optsBad = {
-  session: false,
-  failureRedirect: "/api/autentificar/autenticacion-incorrecta",
-};
-
-/*const optsDenegada = {
-  session: false,
-  failureRedirect: "/api/autentificar/autenticacion-denegada",
-};*/
-
-authRouter.post("/registro", passportCb("registro"), registroCB);
-authRouter.post("/login", passportCb("login"), loginCB);
-authRouter.get(
-  "/google",
-  passportCb("google", { scope: ["email", "profile"] })
-);
-authRouter.get("/google/redirect", passportCb("google"), loginCB);
-authRouter.post("/signout", passportCb("user"), signoutCB);
-authRouter.post("/online", passportCb("user"), onlineCB);
-authRouter.get("/autenticacion-incorrecta", badAuth, onlineCB);
-authRouter.get("/autenticacion-denegada", denegada, onlineCB);
-
+  init = () => {
+    this.crear("/registro", ["Publico"], passportCb("registro"), registroCB);
+    this.crear("/login", ["Publico"],passportCb("login"), loginCB);
+    this.crear("/signout", ["Usuario", "Administrador"], signoutCB);
+    this.crear("/online", ["Usuario", "Administrador"], onlineCB);
+    this.leer(
+      "/google",
+      ["Publico"],
+      passportCb("google", { scope: ["email", "profile"] })
+    );
+    this.leer("/google/redirect", ["Publico"], passportCb("google"), loginCB);
+    this.leer("/autenticacion-incorrecta", ["Publico"], badAuth, onlineCB);
+    this.leer("/autenticacion-denegada", ["Publico"], denegada, onlineCB);
+  };
+}
+const authRouter = new AuthRouter().getRouter();
 export default authRouter;

@@ -1,95 +1,62 @@
-import { Router } from "express";
+import CustomRouter from "../../helpers/router.helper.js";
 import { productosManager } from "../../data/managers/mongo/manager.mongo.js";
 import passport from "passport";
 
-const productosRouter = Router();
-
-const crearRegistro = async (req, res, next) => {
-  try {
-    const { method, originalUrl: url } = req;
-    const data = req.body;
-    data.owner_id = req.user._id;
-    const response = await productosManager.crearRegistro(data);
-    res.status(201).json({ response, method, url });
-  } catch (error) {
-    next(error);
-  }
+const crearRegistro = async (req, res) => {
+  const data = req.body;
+  data.owner_id = req.user._id;
+  const response = await productosManager.crearRegistro(data);
+  res.json201(response);
 };
-const buscarRegistros = async (req, res, next) => {
-  try {
-    const { method, originalUrl: url } = req;
-    const filter = req.query;
-    const response = await productosManager.buscarRegistros(filter);
-    if (response.length === 0) {
-      const error = new Error("Datos no encontrados");
-      error.statusCode = 404;
-      throw error;
-    }
-    res.status(200).json({ response, method, url });
-  } catch (error) {
-    next(error);
+const buscarRegistros = async (req, res) => {
+  const filter = req.query;
+  const response = await productosManager.buscarRegistros(filter);
+  if (response.length === 0) {
+    res.json404();
   }
+  res.json200(response);
 };
-const buscarRegistroPorId = async (req, res, next) => {
-  try {
-    const { method, originalUrl: url } = req;
-    const { id } = req.params;
-    const response = await productosManager.buscarRegistroPorId(id);
-    if (!response) {
-      const error = new Error("Datos no encontrados");
-      error.statusCode = 404;
-      throw error;
-    }
-    res.status(200).json({ response, method, url });
-  } catch (error) {
-    next(error);
+const buscarRegistroPorId = async (req, res) => {
+  const { id } = req.params;
+  const response = await productosManager.buscarRegistroPorId(id);
+  if (!response) {
+    res.json404();
   }
+  res.json200(response);
 };
-const actualizarRegistroPorId = async (req, res, next) => {
-  try {
-    const { method, originalUrl: url } = req;
-    const { id } = req.params;
-    const data = req.body;
-    const response = await productosManager.actualizarRegistroPorId(id, data);
-
-    res.status(200).json({ response, method, url });
-  } catch (error) {
-    next(error);
+const actualizarRegistroPorId = async (req, res) => {
+  const { id } = req.params;
+  const data = req.body;
+  const response = await productosManager.actualizarRegistroPorId(id, data);
+  if (!response) {
+    res.json404();
   }
+  res.json200(response);
 };
-const eliminarRegistroPorId = async (req, res, next) => {
-  try {
-    const { method, originalUrl: url } = req;
-    const { id } = req.params;
-    const response = await productosManager.eliminarRegistroPorId(id);
-    if (!response) {
-      const error = new Error("Datos no encontrados");
-      error.statusCode = 404;
-      throw error;
-    }
-    res.status(200).json({ response, method, url });
-  } catch (error) {
-    next(error);
+const eliminarRegistroPorId = async (req, res) => {
+  const { id } = req.params;
+  const response = await productosManager.eliminarRegistroPorId(id);
+  if (!response) {
+    res.json404();
   }
+  res.json200(response);
 };
-
 const optsDenegada = {
   session: false,
   failureRedirect: "/api/autentificar/autenticacion-denegada",
 };
-
-productosRouter.post(
-  "/",
-  passport.authenticate("admin", optsDenegada),
-  crearRegistro
-);
-
-productosRouter.get("/", buscarRegistros);
-
-productosRouter.get("/:id", buscarRegistroPorId);
-
-productosRouter.put("/:id",passport.authenticate("admin", optsDenegada),actualizarRegistroPorId);
-
-productosRouter.delete("/:id",passport.authenticate("admin", optsDenegada),eliminarRegistroPorId);
-
+class ProductosRouter extends CustomRouter {
+  constructor() {
+    super();
+    this.init();
+  }
+  init = () => {
+    this.crear("/", ["Administrador"], crearRegistro);
+    this.leer("/", ["Publico"], buscarRegistros);
+    this.leer("/:id", ["Publico"], buscarRegistroPorId);
+    this.actualizar("/:id", ["Administrador"], actualizarRegistroPorId);
+    this.eliminar("/:id", ["Administrador"], eliminarRegistroPorId);
+  };
+}
+const productosRouter = new ProductosRouter().getRouter();
 export default productosRouter;

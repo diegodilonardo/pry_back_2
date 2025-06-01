@@ -25,11 +25,8 @@ passport.use(
         }
         let user = await usuariosManager.buscarPor({ email });
         if (user) {
-          /*  const error = new Error("Datos Incorrectos");
-          error.statusCode = 401;
-          throw error;*/
-          done(null, null, {
-            message: "Credenciales Invalidas",
+            done(null, null, {
+            message: "El usuario existe en la BD",
             statusCode: 401,
           });
         }
@@ -85,7 +82,7 @@ passport.use(
             /* req.session.email = user.email; */
         /* crear el token y enviarlo al cliente*/
         const data = {
-          user_id: user.user_id,
+          user_id: user._id,
           email: user.email,
           rol: user.rol,
         };
