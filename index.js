@@ -1,4 +1,5 @@
-import "dotenv/config.js";
+//import "dotenv/config.js";
+import "./src/helpers/env.helper.js";
 import express from "express";
 import { engine } from "express-handlebars";
 import __dirname from "./utils.js";
@@ -7,6 +8,7 @@ import indexRouter from "./src/routers/index.router.js";
 import pathHandlers from "./src/middlewares/pathHandler.mid.js";
 import errorHandler from "./src/middlewares/errorHandler.mid.js";
 import bdConexion from "./src/helpers/BDConexion.helper.js";
+import argvsHelper from "./src/helpers/argvs.helper.js";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import MongoStore from "connect-mongo";
@@ -16,7 +18,12 @@ import MongoStore from "connect-mongo";
 const servidor = express();
 const port = process.env.PORT || 8080;
 const ready = async () => {
-  console.log("Servidor Iniciado Correctamente en el puerto " + port);
+  console.log(
+    "Servidor Iniciado Correctamente en el puerto " +
+      port +
+      " en modo " +
+      argvsHelper.mode
+  );
   await bdConexion(process.env.LINK_BD);
 };
 servidor.listen(port, ready);
@@ -53,5 +60,3 @@ servidor.use(
 servidor.use("/", indexRouter);
 servidor.use(errorHandler);
 servidor.use(pathHandlers);
-
-

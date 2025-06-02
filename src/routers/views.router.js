@@ -1,31 +1,7 @@
 import CustomRouter from "../helpers/router.helper.js";
-import { productosManager } from "../data/managers/mongo/manager.mongo.js";
-import passport from "../middlewares/passport.mid.js";
+import { indexView,registroView,loginView,perfilUsuarioView,detalleProductoView,actualizarPerfilView } from "../controllers/views.controller.js";
 
 
-const indexView = async (req, res) => {
-  const productos = await productosManager.buscarRegistros();
-  res.status(200).render("index", { productos });
-};
-const registroView = async (req, res) => {
-  res.status(200).render("register");
-};
-const loginView = async (req, res) => {
-  res.status(200).render("login");
-};
-const detalleProductoView = async (req, res) => {
-  const { id } = req.params;
-  const producto = await productosManager.buscarRegistroPorId(id);
-  res.status(200).render("detalle", { producto });
-};
-const perfilUsuarioView = async (req, res) => {
-  const { user } = req;
-  res.status(200).render("perfil", { user });
-};
-const actualizarPerfilView = async (req, res) => {
-  const { user } = req;
-  res.status(200).render("actualizarUsuario", { user });
-};
 
 class ViewsRouter extends CustomRouter {
   constructor() {
@@ -33,12 +9,12 @@ class ViewsRouter extends CustomRouter {
     this.init();
   }
   init = () => {
-    this.render("/" , indexView);
-    this.render("/registro" , registroView);
-    this.render("/login" , loginView);
-    this.render("/detalle/:id" , detalleProductoView);
-    this.render("/perfil",perfilUsuarioView);
-    this.render("/actualizarUsuario", actualizarPerfilView);
+    this.render("/",["Publico"], indexView);
+    this.render("/registro",["Publico"], registroView);
+    this.render("/login",["Publico"], loginView);
+    this.render("/detalle/:id",["Publico"], detalleProductoView);
+    this.render("/perfil",["Usuario","Administrador"],perfilUsuarioView);
+    this.render("/actualizarUsuario",["Usuario","Administrador"], actualizarPerfilView);
   };
 }
 
