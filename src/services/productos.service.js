@@ -1,15 +1,15 @@
-import { productosManager } from "../data/managers/mongo/manager.mongo.js";
+import { productosRepository } from "../repositories/repository.js"
 
 const buscarRegistrosServices = async (filter) =>
-  await productosManager.buscarRegistros(filter);
+  await productosRepository.buscarRegistros(filter);
 const buscarRegistroPorIdServices = async (id) =>
-  await productosManager.buscarRegistroPorId(id);
+  await productosRepository.buscarRegistroPorId(id);
 const crearRegistroServices = async (data) =>
-  await productosManager.crearRegistro(data);
+  await productosRepository.crearRegistro(data);
 const actualizarRegistroPorIdServices = async (id, data) =>
-  await productosManager.actualizarRegistroPorId(id, data);
+  await productosRepository.actualizarRegistroPorId(id, data);
 const eliminarRegistroPorIdServices = async (id) =>
-  await productosManager.eliminarRegistroPorId(id);
+  await productosRepository.eliminarRegistroPorId(id);
 
 export {
   buscarRegistrosServices,

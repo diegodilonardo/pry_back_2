@@ -1,4 +1,4 @@
-import { usuariosManager } from "../data/managers/mongo/manager.mongo.js";
+import { usuariosRepository } from "../repositories/repository.js";
 import { verificarToken } from "../helpers/token.helper.js";
 
 const setupPolicies = (politicas) => async (req, res, next) => {
@@ -17,7 +17,7 @@ const setupPolicies = (politicas) => async (req, res, next) => {
     };
     if (!rolesPermitidos[rol]) return res.json401();
     console.log([rol])
-    const user = await usuariosManager.buscarRegistroPorId(user_id);
+    const user = await usuariosRepository.buscarRegistroPorId(user_id);
     req.user = user;
     next();
   } catch (error) {

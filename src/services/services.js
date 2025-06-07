@@ -1,27 +1,28 @@
 import {
-  carritosManager,
-  productosManager,
-  usuariosManager,
-} from "../data/managers/mongo/manager.mongo.js";
+  carritosRepository,
+  productosRepository,
+  usuariosRepository,
+} from "../repositories/repository.js";
 
 class Services {
   constructor(manager) {
-    this.manager = productosManager;
+    this.repository = repository;
   }
 
   buscarRegistros = async (filter) =>
-    await this.manager.buscarRegistros(filter);
+    await this.repository.buscarRegistros(filter);
   buscarRegistroPorId = async (id) =>
-    await this.manager.buscarRegistroPorId(id);
-  crearRegistro = async (data) => await this.manager.crearRegistro(data);
+    await this.repository.buscarRegistroPorId(id);
+  crearRegistro = async (data) => await this.repository.crearRegistro(data);
   actualizarRegistroPorId = async (id, data) =>
-    await this.manager.actualizarRegistroPorId(id, data);
+    await this.repository.actualizarRegistroPorId(id, data);
   eliminarRegistroPorId = async (id) =>
-    await this.manager.eliminarRegistroPorId(id);
+    await this.repository.eliminarRegistroPorId(id);
+  buscarPor = async (filter) => await this.repository.buscarPor(filter);
 }
 
-const productosServices = new Services(productosManager);
-const carritosServices = new Services(carritosManager);
-const usuariosServices = new Services(usuariosManager);
+const productosServices = new Services(productosRepository);
+const carritosServices = new Services(carritosRepository);
+const usuariosServices = new Services(usuariosRepository);
 
 export { productosServices, carritosServices, usuariosServices };

@@ -1,8 +1,8 @@
-import { productosManager } from "../data/managers/mongo/manager.mongo.js";
+import { productosRepository } from "../repositories/repository.js";
 
 class ProductosServices {
   constructor() {
-    this.manager = productosManager;
+    this.manager = productosRepository;
   }
 
   buscarRegistros = async (filter) =>

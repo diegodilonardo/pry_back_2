@@ -1,4 +1,3 @@
-//import "dotenv/config.js";
 import "./src/helpers/env.helper.js";
 import express from "express";
 import { engine } from "express-handlebars";
@@ -24,7 +23,9 @@ const ready = async () => {
       " en modo " +
       argvsHelper.mode
   );
-  await bdConexion(process.env.LINK_BD);
+  if (process.env.PERSISTENCE === "mongo") {
+    await bdConexion(process.env.LINK_BD);
+  }
 };
 servidor.listen(port, ready);
 

@@ -1,6 +1,5 @@
 import CustomRouter from "../../helpers/router.helper.js";
-import passport from "../../middlewares/passport.mid.js";
-import { usuariosManager } from "../../data/managers/mongo/manager.mongo.js";
+import { usuariosRepository } from "../../repositories/repository.js";
 
 class UsuariosRouter extends CustomRouter {
   constructor() {
@@ -18,7 +17,7 @@ const actualizarUsuario = async (req, res) => {
   const { method, originalUrl: url } = req;
   const data = req.body;
   const { _id } = req.user;
-  const response = await usuariosManager.actualizarRegistroPorId(_id, data);
+  const response = await usuariosRepository.actualizarRegistroPorId(_id, data);
   res.status(200).json({ response, method, url });
 };
 

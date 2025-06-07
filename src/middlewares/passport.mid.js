@@ -1,7 +1,7 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
-import { usuariosManager } from "../data/managers/mongo/manager.mongo.js";
+import { usuariosRepository } from "../repositories/repository.js";
 import { compararHash, crearHash } from "../helpers/hash.helper.js";
 import { crearToken } from "../helpers/token.helper.js";
 import { Strategy as GoogleStrategy } from "passport-google-oauth2";
@@ -23,15 +23,15 @@ passport.use(
           error.statusCode = 400;
           throw error;
         }
-        let user = await usuariosManager.buscarPor({ email });
+        let user = await usuariosRepository.buscarPor({ email });
         if (user) {
             done(null, null, {
             message: "El usuario existe en la BD",
             statusCode: 401,
           });
         }
-        req.body.password = crearHash(password);
-        user = await usuariosManager.crearRegistro(req.body);
+        
+        user = await usuariosRepository.crearRegistro(req.body);
         done(null, user);
         /*el primer parametro de done es el error si ocurre*/
         /* el segundo parametro son los datos del usuario que se guardan en el objeto de requerimiento*/
@@ -54,7 +54,7 @@ passport.use(
     /* callback con la logica necesaria para resolver la estrategia */
     async (req, email, password, done) => {
       try {
-        let user = await usuariosManager.buscarPor({ email }); //Datos desde Mongo
+        let user = await usuariosRepository.buscarPor({ email }); //Datos desde Mongo
         if (!user) {
           /*  const error = new Error(
             "Datos Incorrectos. Debe Registrarse como usuario"
@@ -107,7 +107,7 @@ passport.use(
     async (data, done) => {
       try {
         const { user_id, email, rol } = data;
-        const user = await usuariosManager.buscarPor({
+        const user = await usuariosRepository.buscarPor({
           id: user_id,
           email,
           rol,
@@ -141,7 +141,7 @@ passport.use(
     async (data, done) => {
       try {
         const { user_id, email, rol } = data;
-        const user = await usuariosManager.buscarPor({
+        const user = await usuariosRepository.buscarPor({
           id: user_id,
           email,
           rol,
@@ -177,7 +177,7 @@ passport.use(
       try {
         console.log(profile);
         const { email, name, picture, id } = profile;
-        let user = await usuariosManager.buscarPor({ email: id });
+        let user = await usuariosRepository.buscarPor({ email: id });
         if (!user) {
           user = {
             email: id,
@@ -186,7 +186,7 @@ passport.use(
             password: crearHash(email),
             ciudad: "Google",
           };
-          user = await usuariosManager.crearRegistro(user);
+          user = await usuariosRepository.crearRegistro(user);
         }
         const data = {
           user_id: user.user_id,
