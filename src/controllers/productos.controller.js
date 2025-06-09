@@ -1,20 +1,14 @@
-import {
-  buscarRegistrosServices,
-  buscarRegistroPorIdServices,
-  crearRegistroServices,
-  actualizarRegistroPorIdServices,
-  eliminarRegistroPorIdServices,
-} from "../services/productos.service.js";
+import {productosServices} from "../services/services.js";
 
 const crearRegistro = async (req, res) => {
   const data = req.body;
   data.owner_id = req.user._id;
-  const response = await crearRegistroServices(data);
+  const response = await productosServices.crearRegistro(data);
   res.json201(response);
 };
 const buscarRegistros = async (req, res) => {
   const filter = req.query;
-  const response = await buscarRegistrosServices(filter);
+  const response = await productosServices.buscarRegistros(filter);
   if (response.length === 0) {
     res.json404();
   }
@@ -22,7 +16,7 @@ const buscarRegistros = async (req, res) => {
 };
 const buscarRegistroPorId = async (req, res) => {
   const { id } = req.params;
-  const response = await buscarRegistroPorIdServices(id);
+  const response = await productosServices.buscarRegistroPorId(id);
   if (!response) {
     res.json404();
   }
@@ -31,7 +25,7 @@ const buscarRegistroPorId = async (req, res) => {
 const actualizarRegistroPorId = async (req, res) => {
   const { id } = req.params;
   const data = req.body;
-  const response = await actualizarRegistroPorIdServices(id, data);
+  const response = await productosServices.actualizarRegistroPorId(id, data);
   if (!response) {
     res.json404();
   }
@@ -39,7 +33,7 @@ const actualizarRegistroPorId = async (req, res) => {
 };
 const eliminarRegistroPorId = async (req, res) => {
   const { id } = req.params;
-  const response = await eliminarRegistroPorIdServices(id);
+  const response = await productosServices.eliminarRegistroPorId(id);
   if (!response) {
     res.json404();
   }

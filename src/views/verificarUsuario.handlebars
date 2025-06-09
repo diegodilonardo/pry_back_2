@@ -1,0 +1,31 @@
+<main class="d-flex flex-column align-items-center w-100 flex-grow-1">
+  <h1 style="background-color: #b3b3b3" class="p-3 text-center w-100">VERIFICAR
+    USUARIO</h1>
+  <form
+    class="m-3 d-flex flex-column justify-content-evenly flex-wrap align-items-center"
+    style="width: 380px;"
+  >
+    <input
+      class="m-2 p-2 text-center w-100"
+      type="text"
+      name="correousuario"
+      id="correousuario"
+      value={{email}}
+      disabled
+    />
+    <input
+      class="m-2 p-2 text-center w-100"
+      type="text"
+      name="codigoverificador"
+      id="codigoverificador"
+      placeholder="Ingrese el codigo recibido por email"
+    />
+    <input
+      class="m-2 p-2 text-center btn btn-dark w-100"
+      type="button"
+      id="btnverificar"
+      value="Verificar Código"
+    />
+  </form>
+</main>
+<script src="/scripts/verificar.js"></script>

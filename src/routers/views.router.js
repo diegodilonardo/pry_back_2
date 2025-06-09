@@ -1,5 +1,5 @@
 import CustomRouter from "../helpers/router.helper.js";
-import { indexView,registroView,loginView,perfilUsuarioView,detalleProductoView,actualizarPerfilView } from "../controllers/views.controller.js";
+import { indexView,registroView,loginView,perfilUsuarioView,detalleProductoView,actualizarPerfilView, verificarUsuarioView,resetearPasswordView } from "../controllers/views.controller.js";
 
 
 
@@ -15,6 +15,8 @@ class ViewsRouter extends CustomRouter {
     this.render("/detalle/:id",["Publico"], detalleProductoView);
     this.render("/perfil",["Usuario","Administrador"],perfilUsuarioView);
     this.render("/actualizarUsuario",["Usuario","Administrador"], actualizarPerfilView);
+    this.render("/verificarUsuario/:email",["Publico"],verificarUsuarioView)
+    this.render("/resetPassword/:email",["Usuario","Administrador"],resetearPasswordView)
   };
 }
 

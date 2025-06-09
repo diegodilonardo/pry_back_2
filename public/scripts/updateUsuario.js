@@ -17,7 +17,6 @@ document.querySelector("#btnactualizar").addEventListener("click", async () => {
     if (ciudad) {
       data.ciudad = ciudad;
     }
-
     const opts = {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -26,7 +25,7 @@ document.querySelector("#btnactualizar").addEventListener("click", async () => {
     const url = "/api/usuarios";
     let response = await fetch(url, opts);
     response = await response.json();
-    // console.log(response);
+    
     if (response.error) {
       alert(response.error);
     } else {

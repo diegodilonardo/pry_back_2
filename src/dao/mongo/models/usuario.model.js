@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import crypto from "crypto";
 
 const collection = "Usuarios";
 const schema = new Schema(
@@ -15,6 +16,8 @@ const schema = new Schema(
       enum: ["Usuario", "Administrador", "Premium"],
       index: true,
     },
+    verificado: {type: Boolean, default: false},
+    codigo_verificacion: {type: String, default: crypto.randomBytes(12).toString("hex") }
   },
   { timestamps: true }
 );

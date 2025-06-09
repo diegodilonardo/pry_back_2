@@ -5,10 +5,10 @@ import {
 } from "../repositories/repository.js";
 
 class Services {
-  constructor(manager) {
+  constructor(repository) {
     this.repository = repository;
   }
-
+  buscarPor = async (filter) => await this.repository.buscarPor(filter);
   buscarRegistros = async (filter) =>
     await this.repository.buscarRegistros(filter);
   buscarRegistroPorId = async (id) =>
@@ -18,7 +18,6 @@ class Services {
     await this.repository.actualizarRegistroPorId(id, data);
   eliminarRegistroPorId = async (id) =>
     await this.repository.eliminarRegistroPorId(id);
-  buscarPor = async (filter) => await this.repository.buscarPor(filter);
 }
 
 const productosServices = new Services(productosRepository);

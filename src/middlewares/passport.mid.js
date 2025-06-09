@@ -5,6 +5,7 @@ import { usuariosRepository } from "../repositories/repository.js";
 import { compararHash, crearHash } from "../helpers/hash.helper.js";
 import { crearToken } from "../helpers/token.helper.js";
 import { Strategy as GoogleStrategy } from "passport-google-oauth2";
+import verificarMail from "../helpers/verificarEmail.helper.js";
 
 const callbackURL = "http://localhost:8080/api/autentificar/google/redirect";
 
@@ -25,13 +26,14 @@ passport.use(
         }
         let user = await usuariosRepository.buscarPor({ email });
         if (user) {
-            done(null, null, {
+          done(null, null, {
             message: "El usuario existe en la BD",
             statusCode: 401,
           });
         }
-        
+
         user = await usuariosRepository.crearRegistro(req.body);
+        await verificarMail(user.email, user.codigo_verificacion);
         done(null, user);
         /*el primer parametro de done es el error si ocurre*/
         /* el segundo parametro son los datos del usuario que se guardan en el objeto de requerimiento*/
@@ -56,11 +58,6 @@ passport.use(
       try {
         let user = await usuariosRepository.buscarPor({ email }); //Datos desde Mongo
         if (!user) {
-          /*  const error = new Error(
-            "Datos Incorrectos. Debe Registrarse como usuario"
-          );
-          error.statusCode = 401;
-          throw error;*/
           done(null, null, {
             message: "Credenciales Invalidas",
             statusCode: 401,
@@ -76,11 +73,13 @@ passport.use(
             statusCode: 401,
           });
         }
-        /* No se necesita session por que se trabaja con passport y jwt /*
-            /* req.session.user_id = user._id; /*
-            /* req.session.role = user.rol; /*
-            /* req.session.email = user.email; */
-        /* crear el token y enviarlo al cliente*/
+        const { verificado } = user;
+        if (!verificado) {
+          return done(null, null, {
+            message: "Deberá verificar la cuenta para poder continuar",
+            statusCode: 401,
+          });
+        }
         const data = {
           user_id: user._id,
           email: user.email,
@@ -147,11 +146,7 @@ passport.use(
           rol,
         });
         if (!user || user.rol !== "Administrador") {
-          /* const error = new Error(
-            "Acceso denegado, no tiene los permisos correspondientes."
-          );
-          error.statusCode = 403;
-          throw error;*/
+          
           done(null, null, {
             message: "Acceso denegado, no tiene los permisos correspondientes.",
             statusCode: 403,

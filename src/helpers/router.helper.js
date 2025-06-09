@@ -51,15 +51,19 @@ class CustomRouter {
       this.applyMiddlewares(middlewares)
     );
   use = (path, ...middlewares) =>
-    this.router.use(
-      path,
-      this.applyMiddlewares(middlewares)
-    );
+    this.router.use(path, this.applyMiddlewares(middlewares));
   render = (path, politicas, ...middlewares) =>
     this.router.get(
       path,
       setupPolicies(politicas),
       this.applyMiddlewaresToRender(middlewares)
+    );
+
+  enviar = (path, politicas, ...middlewares) =>
+    this.router.get(
+      path,
+      setupPolicies(politicas),
+      this.applyMiddlewares(middlewares)
     );
 }
 
