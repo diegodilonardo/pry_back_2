@@ -22,4 +22,7 @@ document.querySelector("#btnlogin").addEventListener("click", async () => {
       console.log(error);
       alert(error.message);
     }
+  })
+  document.querySelector("#btnolvidodepassword").addEventListener("click", async () => {
+    location.replace("/forgetPassword")
   });

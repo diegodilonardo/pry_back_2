@@ -20,7 +20,7 @@ document.querySelector("#btnregistro").addEventListener("click", async () => {
       if (response.error) {
         alert(response.error);
       } else {
-        location.replace("/login");
+        location.replace("/");
       }
     } catch (error) {
       console.log(error);

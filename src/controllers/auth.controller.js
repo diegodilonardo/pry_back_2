@@ -1,5 +1,7 @@
 import { usuariosServices } from "../services/services.js";
 import { crearHash } from "../helpers/hash.helper.js";
+import { verificarMailPublico } from "../helpers/verificarEmail.helper.js";
+import crypto from "crypto";
 
 class AuthController {
   registroCB = async (req, res) => {
@@ -44,7 +46,35 @@ class AuthController {
     });
     return res.json200(user, "Password Modificado");
   };
+  enviarMailVerificarCb = async (req, res) => {
+    const { email } = req.params;
+    const user = await usuariosServices.buscarPor({ email });
+    if (!user) {
+      return res.json404();
+    }
+    const codigo = crypto.randomBytes(12).toString("hex");
+    await usuariosServices.actualizarRegistroPorId(user._id, {
+      codigo_verificacion_reset: codigo,
+    });
+    await verificarMailPublico(user.email, codigo);
+    return res.json200("Mail Enviado");
+  };
+  resetearPasswordPublicoCb = async (req, res) => {
+    const { email } = req.params;
+    const {codigoverificador} = req.params
+    const { newpassword } = req.params;
+    const user = await usuariosServices.buscarPor({ email },{codigoverificador});
+    if (!user) {
+      return res.json404();
+    }
+    await usuariosServices.actualizarRegistroPorId(user._id, {
+      password: crearHash(newpassword),
+      codigo_verificacion_reset: null,
+    });
+    return res.json200(user, "Password Modificado");
+  };
 }
+
 const authController = new AuthController();
 export default authController;
 const {
@@ -56,6 +86,8 @@ const {
   denegada,
   verificarUsuarioCb,
   resetearPasswordCb,
+  enviarMailVerificarCb,
+  resetearPasswordPublicoCb,
 } = authController;
 export {
   registroCB,
@@ -66,4 +98,6 @@ export {
   denegada,
   verificarUsuarioCb,
   resetearPasswordCb,
+  enviarMailVerificarCb,
+  resetearPasswordPublicoCb,
 };

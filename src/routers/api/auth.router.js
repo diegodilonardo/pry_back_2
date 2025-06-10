@@ -1,6 +1,6 @@
 import CustomRouter from "../../helpers/router.helper.js";
 import passportCb from "../../middlewares/passportCb.mid.js";
-import {registroCB,loginCB,signoutCB,onlineCB,badAuth,denegada,verificarUsuarioCb,resetearPasswordCb} from "../../controllers/auth.controller.js"
+import {registroCB,loginCB,signoutCB,onlineCB,badAuth,denegada,verificarUsuarioCb,resetearPasswordCb,enviarMailVerificarCb,resetearPasswordPublicoCb} from "../../controllers/auth.controller.js"
 
 class AuthRouter extends CustomRouter {
   constructor() {
@@ -18,7 +18,8 @@ class AuthRouter extends CustomRouter {
     this.leer("/autenticacion-denegada", ["Publico"], denegada);
     this.leer("/verificar-email/:email/:codigoverificador",["Publico"],verificarUsuarioCb)
     this.leer("/resetear-password/:email/:newpassword",["Usuario","Administrador"],resetearPasswordCb)
-   
+    this.leer("/resetear-password-publico/:email/:newpassword",["Publico"],resetearPasswordPublicoCb)
+    this.leer("/olvido-password/:email",["Publico"],enviarMailVerificarCb)
   };
 }
 const authRouter = new AuthRouter().getRouter();

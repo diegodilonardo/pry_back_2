@@ -5,7 +5,7 @@ import { usuariosRepository } from "../repositories/repository.js";
 import { compararHash, crearHash } from "../helpers/hash.helper.js";
 import { crearToken } from "../helpers/token.helper.js";
 import { Strategy as GoogleStrategy } from "passport-google-oauth2";
-import verificarMail from "../helpers/verificarEmail.helper.js";
+import { verificarMail } from "../helpers/verificarEmail.helper.js";
 
 const callbackURL = "http://localhost:8080/api/autentificar/google/redirect";
 
@@ -146,7 +146,6 @@ passport.use(
           rol,
         });
         if (!user || user.rol !== "Administrador") {
-          
           done(null, null, {
             message: "Acceso denegado, no tiene los permisos correspondientes.",
             statusCode: 403,

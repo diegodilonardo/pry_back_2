@@ -33,7 +33,19 @@ const verificarUsuarioView = async (req, res) => {
 const resetearPasswordView = async (req, res) => {
   const { email } = req.params;
   res.status(200).render("resetPassword", { email });
+  
 };
+const resetearPasswordPublicoView = async (req, res) => {
+  const { email } = req.params;
+  const { codigo_verificador} = req.params
+  res.status(200).render("resetPasswordPublico", { email ,codigo_verificador});
+  
+};
+
+const forgetPasswordView = async (req, res) => {
+   res.status(200).render("forgetPassword");
+};
+
 export {
   indexView,
   registroView,
@@ -43,4 +55,6 @@ export {
   actualizarPerfilView,
   verificarUsuarioView,
   resetearPasswordView,
+  forgetPasswordView,
+  resetearPasswordPublicoView
 };

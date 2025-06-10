@@ -17,7 +17,8 @@ const schema = new Schema(
       index: true,
     },
     verificado: {type: Boolean, default: false},
-    codigo_verificacion: {type: String, default: crypto.randomBytes(12).toString("hex") }
+    codigo_verificacion: {type: String, default: crypto.randomBytes(12).toString("hex")},
+    codigo_verificacion_reset: {type: String, default: null}
   },
   { timestamps: true }
 );

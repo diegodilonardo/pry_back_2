@@ -17,6 +17,7 @@ class UsuariosDTO {
       "https://static.vecteezy.com/system/resources/thumbnails/008/442/086/small/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg";
     this.rol = data.rol || "Usuario";
     this.codigo_verificacion = data.codigo_verificacion || crypto.randomBytes(12).toString("hex");
+    this.codigo_verificacion_reset = data.codigo_verificacion_reset || null
     if (PERSISTENCE !== "mongo") {
       this.verificado = data.verificado || false, 
       this.createdAt = new Date();
